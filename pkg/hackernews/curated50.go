@@ -1,11 +1,13 @@
 package hackernews
 
 import (
-	"bitbucket.org/xivart/hacker-news-api/pkg/models"
 	"errors"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"sort"
+
+	"github.com/rs/zerolog/log"
+
+	"github.com/snigdhasambitak/hackernews-api/pkg/models"
 )
 
 func (s *service) Curated50(minKarma int) ([]models.Story, error) {
@@ -64,12 +66,12 @@ func (s *service) parallelizeFilterStories(topStories []models.Item, minKarma in
 		user  models.User
 		err   error
 	}
-	worker := func(jobs chan models.Item, results chan Result) {
+	worker := func(jobs <-chan models.Item, results chan<- Result) {
 		for j := range jobs {
-			item, err := s.GetUser(j.By)
+			user, err := s.GetUser(j.By)
 			results <- Result{
 				j,
-				item,
+				user,
 				err,
 			}
 		}

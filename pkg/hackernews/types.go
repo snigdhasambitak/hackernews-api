@@ -1,9 +1,11 @@
 package hackernews
 
 import (
-	"bitbucket.org/xivart/hacker-news-api/pkg/models"
-	"github.com/patrickmn/go-cache"
 	"time"
+
+	"github.com/patrickmn/go-cache"
+
+	"github.com/snigdhasambitak/hackernews-api/pkg/models"
 )
 
 type Service interface {

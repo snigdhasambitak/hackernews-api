@@ -1,14 +1,16 @@
 package hackernews
 
 import (
-	"bitbucket.org/xivart/hacker-news-api/pkg/models"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"net/http"
 	"net/http/httptrace"
 	"time"
+
+	"github.com/rs/zerolog/log"
+
+	"github.com/snigdhasambitak/hackernews-api/pkg/models"
 )
 
 type types interface {
@@ -85,8 +87,8 @@ func (s *service) parallelizeGetItem(topStories models.TopStories) ([]models.Ite
 	for i := 0; i < s.maxWorkers; i++ {
 		go worker(jobs, results)
 	}
-	for _, ts := range topStories {
-		jobs <- ts
+	for _, storyID := range topStories {
+		jobs <- storyID
 	}
 	close(jobs)
 	items := make([]models.Item, 0)
@@ -94,7 +96,9 @@ func (s *service) parallelizeGetItem(topStories models.TopStories) ([]models.Ite
 	for i := 0; i < numJobs; i++ {
 		result := <-results
 		if result.err == error(nil) {
-			items = append(items, result.item)
+			if result.item.Type == "story" {
+				items = append(items, result.item)
+			}
 		} else {
 			errs = append(errs, result.err)
 		}

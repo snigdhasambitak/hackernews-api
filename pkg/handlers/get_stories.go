@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog/log"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 )
 
 func (s *handlers) GetStories(c *gin.Context) {
@@ -13,7 +14,7 @@ func (s *handlers) GetStories(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(200, stories)
+		c.JSON(http.StatusOK, stories)
 		log.Info().Dur("TotalTime", time.Since(start)).Msg("sent /stories")
 	}
 }

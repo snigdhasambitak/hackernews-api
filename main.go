@@ -1,11 +1,13 @@
 package main
 
 import (
-	"bitbucket.org/xivart/hacker-news-api/pkg/handlers"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"os"
+
+	"github.com/snigdhasambitak/hackernews-api/pkg/handlers"
 )
 
 func main() {

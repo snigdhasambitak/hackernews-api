@@ -1,8 +1,9 @@
 package handlers
 
 import (
-	"bitbucket.org/xivart/hacker-news-api/pkg/hackernews"
 	"github.com/gin-gonic/gin"
+
+	"github.com/snigdhasambitak/hackernews-api/pkg/hackernews"
 )
 
 type Handlers interface {
