@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ .Release.Name }}
+    annotations:
+    {{ if .Values.PrometheusScrapeEnabled }}
+        prometheus.io/scrape: "{{ .Values.PrometheusScrapeEnabled }}"
+        prometheus.io/path: "{{ .Values.PrometheusScrapePath }}"
+        prometheus.io/port: "{{ .Values.PrometheusScrapePort }}"
+        prometheus.io/hpa: "true"
+    {{ end }}
+    {{ if .Values.hostnameForDNS }}
+        external-dns.alpha.kubernetes.io/hostname: "{{ .Values.hostnameForDNS }}"
+    {{ end }}
+    {{ if .Values.AWSEnabled }}
+        service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+        service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: 'true'
+        service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '60'
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+        service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "{{ .Values.AwsSslArn }}"
+        service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443
+    {{ end }}
+    labels:
+        app: "{{ .Values.App }}"
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        release: {{ .Release.Name }}
+spec:
+    type: {{ .Values.ServiceType }}
+    selector:
+        app: "{{ .Values.App }}"
+        release: {{ .Release.Name }}
+    ports:
+        - protocol: TCP
+          port: {{ .Values.ServerPort }}
+          targetPort: {{ .Values.ContainerPort }}

@@ -1,0 +1,6 @@
+Environment: "prd"
+hostnameForDNS: "hackernews.prd.beat.com"
+MinReplicas: 2
+MaxReplicas: 10
+UpdateStrategy_maxUnavailable: 1
+UpdateStrategy_maxSurge : 1

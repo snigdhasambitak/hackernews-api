@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: "{{ .Values.App }}"
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.App }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.MinReplicas }}
+  strategy:
+    rollingUpdate:
+      maxUnavailable: {{ .Values.UpdateStrategy_maxUnavailable }}
+      maxSurge: {{ .Values.UpdateStrategy_maxSurge }}
+  template:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "{{ .Values.PrometheusScrapeEnabled }}"
+        prometheus.io/path: "{{ .Values.PrometheusScrapePath }}"
+        prometheus.io/port: "{{ .Values.PrometheusScrapePort }}"
+      labels:
+        app: "{{ .Values.App }}"
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Values.App }}
+          image: "{{ .Values.Image }}:{{ .Values.ImageVersion }}"
+          imagePullPolicy: {{ .Values.ImagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.ContainerPort }}
+          resources:
+            limits:
+                cpu: {{ .Values.MaxCpu | quote }}
+                memory: {{ .Values.MaxMemory | quote }}
+            requests:
+                cpu: {{ .Values.Cpu | quote }}
+                memory: {{ .Values.Memory | quote }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.LivenessProbePath | quote }}
+              port: {{ .Values.ContainerPort }}
+            initialDelaySeconds: {{ .Values.LivenessProbeInitialDelaySeconds }}
+            periodSeconds: {{ .Values.LivenessProbePeriodSeconds }}
+            timeoutSeconds: {{ .Values.LivenessTimeoutSeconds }}
+            successThreshold: {{ .Values.LivenessSuccessThreshold }}
+            failureThreshold: {{ .Values.LivenessFailureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.ReadinessProbePath | quote }}
+              port: {{ .Values.ContainerPort }}
+            initialDelaySeconds: {{ .Values.ReadinessProbeInitialDelaySeconds }}
+            periodSeconds: {{ .Values.ReadinessProbePeriodSeconds }}
+            timeoutSeconds: {{ .Values.ReadinessTimeoutSeconds }}
+            successThreshold: {{ .Values.ReadinessSuccessThreshold }}
+            failureThreshold: {{ .Values.ReadinessFailureThreshold }}
+      {{- if .Values.ImagePullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.ImagePullSecret }}
+      {{ end }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 70
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: release
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+              topologyKey: kubernetes.io/hostname
+          - weight: 30
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: release
+                  operator: In
+                  values:
+                  - {{ .Release.Name }}
+              topologyKey: topology.kubernetes.io/zone

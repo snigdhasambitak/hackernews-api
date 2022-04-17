@@ -1,0 +1,47 @@
+{{- if .Values.HPACreate }}
+kind: HorizontalPodAutoscaler
+apiVersion: autoscaling/v2beta2
+metadata:
+  name: "{{ .Release.Name }}"
+  labels:
+    app: "{{ .Values.App }}"
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: "{{ .Release.Name }}"
+spec:
+  minReplicas: {{ .Values.MinReplicas }}
+  maxReplicas: {{ .Values.MaxReplicas }}
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: "{{ .Release.Name }}"
+  metrics:
+  {{- if .Values.scaleOnCPU }}
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.HPACpuUtilTarget }}
+  {{- end }}
+  {{- if .Values.scaleOnMemory }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.HPAMemoryUtilTarget }}
+  {{- end }}
+  {{- if .Values.enableCustomMetrics }}
+  - type: Object
+    object:
+      describedObject:
+        apiVersion: v1
+        kind: Service
+        name: {{ .Release.Name }}
+      metric:
+        name: http_requests
+      target:
+        averageValue: {{ .Values.targetHttpRequests }}
+        type: AverageValue
+    {{ end }}
+{{- end }}

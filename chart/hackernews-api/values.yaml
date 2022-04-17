@@ -1,0 +1,68 @@
+# Basic application identity and properties
+App: "hackernews-api"
+ImagePullPolicy: "IfNotPresent"
+ServiceName: "hackernews-api"
+# ImagePullSecret : "secret"
+
+#change to 443 later
+ServerPort: 80
+ServiceType : NodePort
+
+# Container Image details and details as to where the HELM repo is present
+Image: "docker.io/snigdhasambit/hackernews-api"
+ImageVersion: "1.0" # This value is overwritten in any deploy job.
+ContainerPort: 8080
+
+# Resource Requests and Limits
+# This would be where the application memory and resource needs are specified
+Cpu: "512m"
+Memory: "512Mi"
+MaxCpu: "1000m"
+MaxMemory: "1Gi"
+
+## Deployment Strategy
+UpdateStrategy_maxUnavailable: 1
+UpdateStrategy_maxSurge : 1
+
+# Capacity and Scaling - Most of this section is commented but can be used to customize
+MinReplicas: 2
+MaxReplicas: 5
+HPACreate: true
+scaleOnCPU: true
+scaleOnMemory: true
+HPACpuUtilTarget: 80
+HPAMemoryUtilTarget: 80
+enableCustomMetrics: false
+targetHttpRequests: 15
+
+### only specify one of the two below
+PDBMaxUnavailable: 1
+
+
+# Probes
+LivenessProbePath: "/health"
+LivenessProbeInitialDelaySeconds: 45
+LivenessProbePeriodSeconds: 5
+LivenessTimeoutSeconds: 5
+LivenessSuccessThreshold: 1
+LivenessFailureThreshold: 2
+
+ReadinessProbePath: "/health"
+ReadinessProbeInitialDelaySeconds: 45
+ReadinessProbePeriodSeconds: 5
+ReadinessTimeoutSeconds: 5
+ReadinessSuccessThreshold: 1
+ReadinessFailureThreshold: 2
+
+# Prometheus Scraping is specified to true by default but requires setting up from the application
+# to get the best of this use the language specific prometheus package
+PrometheusScrapeEnabled: true
+PrometheusScrapePath: "/metrics"
+PrometheusScrapePort: "8080"
+
+# Network Policy
+networkPolicyEnabled: true
+
+# AWS enabled
+
+# AWSEnabled : false

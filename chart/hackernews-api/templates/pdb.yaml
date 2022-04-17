@@ -1,0 +1,18 @@
+{{- if (gt .Values.MinReplicas 1.0) }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Values.App }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+spec:
+  {{- if .Values.PDBMaxUnavailable }}
+  maxUnavailable: {{ .Values.PDBMaxUnavailable }}
+  {{ end -}}
+  selector:
+    matchLabels:
+      app: {{ .Values.App }}
+      release: {{ .Release.Name }}
+{{- end }}
