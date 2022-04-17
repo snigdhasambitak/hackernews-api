@@ -15,7 +15,7 @@ type Service interface {
 	GetUser(username string) (models.User, error)
 	// GetTopStories returns top 500 stories from hackernews API
 	GetTopStories() ([]models.Item, error)
-	// Curated50 returns top 50 of the latest 500 stories where the author has karma above 2413 with most coments
+	// Curated50 returns top 50 of the latest 500 stories where the author has karma above 2413 with most comments
 	Curated50(minKarma int) ([]models.Story, error)
 }
 
