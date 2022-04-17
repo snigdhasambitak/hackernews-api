@@ -30,5 +30,22 @@ deploy: docker_release
 	--set ImageVersion=${docker_release} \
     --debug
 
+service:
+	minikube service hackernews-api --url
+
 destroy:
 	helm delete ${app_name}
+
+# optional installation of prometheus
+
+prometheus_deploy:
+	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts \
+	helm install prometheus prometheus-community/prometheus \
+    kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-np
+
+prometheus_url:
+	minikube service prometheus-server-np --url
+
+destroy_prometheus:
+	helm delete prometheus
+
