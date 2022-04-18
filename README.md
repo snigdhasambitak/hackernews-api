@@ -39,7 +39,11 @@ GET /stories
 As the ask is to get a curated list of the top 50 stories based on the authors karma, so we need to first set up different models for our requirements.
 We will break down the application into 3 different parts
 
-1. `Models` : We define the structs for the various items. The models which we have used are items(Stories, comments, jobs, Ask HNs and even polls are just items. They're identified by their ids, which are unique integers, and live under /v0/item/<id>), story(the response structure), topstories(the list of top stories) and user(which contains the varius fileds of an author)
+1. `Models` : We define the structs for the various items. The models which we have used are :
+   1. `items`(Stories, comments, jobs, Ask HNs and even polls are just items. They're identified by their ids, which are unique integers, and live under /v0/item/<id>), 
+   2. `story`(the response structure containing Author, Karma, Title, Comments and Position), 
+   3. `topstories`(the list of top stories) and 
+   4. `user`(which contains the varius fileds of an author)
 2. `Handlers` : Where we mock and call the various services. This also enables us to extend our program and later ad additional functionalities instead of modifying the existing fuctions
 3. `Hackernews services` : We define the various services as per our requirememts.
    1. GetItem returns item from hackernews API for given id
@@ -59,11 +63,11 @@ We will break down the application into 3 different parts
       Curated50(minKarma int) ([]models.Story, error)
       ```
 
-We first collect the curated50 stories based on the authors minimum karma i.e 2413 and then sort the list based on the comments. 
+* We first collect the curated50 stories based on the authors minimum karma i.e 2413 and then sort the list based on the comments. 
 
-We use goroutines( 50 workers ) for parallel execution of our code as it takes around 3 mins to go through the entire 500 list if we are using a serialisation method.
+* We use goroutines( 50 workers ) for parallel execution of our code as it takes around 3 mins to go through the entire 500 list if we are using a serialisation method.
 
-We have also used a in memory caching mechanism that creates a cache with a default expiration time of 5 minutes, and which purges expired items every 10 minutes
+* We have also used a in memory caching mechanism that creates a cache with a default expiration time of 5 minutes, and which purges expired items every 10 minutes
 
 ```go
 cache:      cache.New(5*time.Minute, 10*time.Minute),
