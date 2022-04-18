@@ -36,26 +36,27 @@ GET /stories
 
 # Implementation
 
-## Models
+As the ask is to get a curated list of the top 50 stories based on the authors karma, so we need to first set up different models for our requirements.
+We will break down the application into 3 different parts
 
-<!-- Based on the response type we have to create multiple models which are user defined structs
+1. Models : We define the structs for the various items. The models which we have used are items(Stories, comments, jobs, Ask HNs and even polls are just items. They're identified by their ids, which are unique integers, and live under /v0/item/<id>), story(the response structure), topstories(the list of top stories) and user(which contains the varius fileds of an author)
+2. Handlers : Where we mock and call the various services. This also enables us to extend our program and later ad additional functionalities instead of modifying the existing fuctions
+3. Hackernews services : We define the various services as per our requirememts.
+   1. GetItem returns item from hackernews API for given id
+      ```
+      GetItem(id int) (models.Item, error)
+      ```
+   2. GetUser returns user from hackernews API for given username
+      ```
+      GetUser(username string) (models.User, error)
+      ```
+   3. GetTopStories returns top 500 stories from hackernews API
+      ```
+      GetTopStories() ([]models.Item, error)
+      ```
+   4. Curated50 returns top 50 of the latest 500 stories where the author has karma above 2413 with most comments
+      ```
+      Curated50(minKarma int) ([]models.Story, error)
+      ```
 
-1. Item
-
-```go
-type Item struct {
-	By          string `json:"by"`
-	Descendants int    `json:"descendants"`
-	ID          int    `json:"id"`
-	Kids        []int  `json:"kids"`
-	Score       int    `json:"score"`
-	Time        int    `json:"time"`
-	Title       string `json:"title"`
-	Type        string `json:"type"`
-	Url         string `json:"url"`
-}
-
-```
-
-2.  -->
 

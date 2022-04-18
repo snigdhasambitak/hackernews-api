@@ -7,7 +7,7 @@ RUN go mod download
 COPY . ./
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o server
 
-FROM alpine
+FROM alpine:3.15.4
 #RUN apk add --no-cache ca-certificates
 COPY --from=builder /app/server .
 # Run the web service on container startup.
