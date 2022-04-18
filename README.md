@@ -34,3 +34,28 @@ GET /stories
 }
 ```
 
+# Implementation
+
+## Models
+
+<!-- Based on the response type we have to create multiple models which are user defined structs
+
+1. Item
+
+```go
+type Item struct {
+	By          string `json:"by"`
+	Descendants int    `json:"descendants"`
+	ID          int    `json:"id"`
+	Kids        []int  `json:"kids"`
+	Score       int    `json:"score"`
+	Time        int    `json:"time"`
+	Title       string `json:"title"`
+	Type        string `json:"type"`
+	Url         string `json:"url"`
+}
+
+```
+
+2.  -->
+

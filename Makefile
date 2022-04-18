@@ -25,7 +25,7 @@ deploy_dry:
     --debug \
     --dry-run
 
-deploy: docker_release
+deploy: 
 	helm upgrade -i ${app_name} ${helm_root} \
 	--set ImageVersion=${docker_release} \
     --debug
