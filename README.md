@@ -44,7 +44,7 @@ We will break down the application into 3 different parts
    2. `story`(the response structure containing Author, Karma, Title, Comments and Position), 
    3. `topstories`(the list of top stories) and 
    4. `user`(which contains the varius fileds of an author)
-2. `Handlers` : Where we mock and call the various services. This also enables us to extend our program and later ad additional functionalities instead of modifying the existing fuctions
+2. `Handlers` : Where we mock and call the various services. This also enables us to extend our program and later add additional functionalities instead of modifying the existing services
 3. `Hackernews services` : We define the various services as per our requirememts.
    1. GetItem returns item from hackernews API for given id
       ```
@@ -90,6 +90,15 @@ cache:      cache.New(5*time.Minute, 10*time.Minute),
      to override these values and use them for each environment.
 
 # Local Development
+
+The prerequisite is to have a local cluster based on minikube.
+
+```shell
+brew install minikube
+minikube start
+```
+
+We can leverage the below makefile for building and deploying out application.
 
 ```makefile
 OSTYPE ?= darwin
@@ -800,3 +809,12 @@ Total request counts
 [GIN] 2022/04/18 - 19:37:46 | 200 |        78.1µs |      172.17.0.1 | GET      "/health"
 [GIN] 2022/04/18 - 19:38:13 | 200 |      6.7153ms |      172.17.0.1 | GET      "/metrics"
 ```
+
+# Further Improvements
+
+1. Have added unit tests for some services. Need to add more
+2. Have enabled prometheus for this app and it provides basic golang metrics. Need to extend the latency based performance metrics. As of now the logs have the request latency durations
+3. Currently, I am using 50 workers for sorting the 500 stories. Not sure about the rate limiting values for hacker news api. But we can definitely add 50 more workers and improve the query performance
+4. Improve caching and use an in memory cache like redis/mongodb for faster execution at scale, lets say we need to make this a production grade appliocation. As of now I am using the golang cache for faster execution
+5. I am exposing the service as a node port and it does not leverage externalDNS and certs. The helm charts have those dependencies but as of now those are disabled
+
