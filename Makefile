@@ -18,6 +18,9 @@ docker_build:
 
 docker_release: docker_build
 	docker push ${docker_repo}:${docker_release}
+docker_run:
+	docker run -p 8080:8080 ${docker_repo}:${docker_release}
+	# open localhost:8080/stories
 
 deploy_dry:
 	helm upgrade -i ${app_name} ${helm_root} \
